@@ -2,13 +2,18 @@ package jeux;
 
 import graphique.boutons.ActionsBoutons;
 import graphique.boutons.PanelBoutons;
+import graphique.carte.Carte;
 import graphique.pseudo.JPseudo;
 import graphique.table.JTable;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
+
+import calcul.calculMain;
 
 import reseau.Global;
 
@@ -23,9 +28,31 @@ public class Poker {
 	 * @param args Ici, on ne traite pas les arguments
 	 */
 	public static void main(String[] args) {
+		/*
 		Poker poker = new Poker();
 		JPseudo jpseudo = new JPseudo(poker);
 		jpseudo.setVisible();
+		*/
+		List<Carte> l= new ArrayList<Carte>();
+		Carte c1= new Carte(1, 11);
+		Carte c2= new Carte(1, 2);
+		Carte c3= new Carte(1, 2);
+		Carte c4= new Carte(1, 10);
+		Carte c5= new Carte(1, 11);
+		Carte c6= new Carte(1, 1);
+		Carte c7= new Carte(1, 13);
+		l.add(c1);
+		l.add(c2);
+		l.add(c3);
+		l.add(c4);
+		l.add(c5);
+		l.add(c6);
+		l.add(c7);
+		System.out.println(calculMain.isCouleur(l));
+
+		
+	
+		
 	}
 
 	/**
