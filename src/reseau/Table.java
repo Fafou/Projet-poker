@@ -27,7 +27,15 @@ public class Table
 		this.petiteBlinde = petiteBlinde;
 		
 		listJoueur = new Joueur[10];
+		for (int i = 0;i<10;i++)
+		{
+			listJoueur[i] = new Joueur(); 
+		}
 		listAttente = new Joueur[10];
+		for (int i = 0;i<10;i++)
+		{
+			listJoueur[i] = new Joueur(); 
+		}
 		
 		listCarte = new LinkedList<String>();
 		listCarteTable = new LinkedList<String>();
@@ -57,7 +65,7 @@ public class Table
 		if (newJoueur.isDealer()) 
 		{
 			listJoueur[9] = newJoueur;
-			newJoueur.setPositionTable(10);
+			newJoueur.setPositionTable(9);
 		}
 		else
 		{
@@ -155,6 +163,16 @@ public class Table
 	public int getNbJoueur()
 	{
 		return nbJoueur;
+	}
+	
+	/**
+	 * Transfert un joueur d'une liste à une autre
+	 * @param uuid
+	 */
+	
+	public void transfertJoueur(long uuid)
+	{
+		
 	}
 	
 	/**
