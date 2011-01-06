@@ -48,7 +48,9 @@ public class ConnexionJoueur implements Connexion {
 		//"rmi://"+adress+":"+port+"/"+bindingName, implementation);
 		Naming.rebind("rmi://localhost/client", implc);
 		System.out.println("Publication dans l'annuaire OK Client");
-		} catch (RemoteException e) {}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 		
 		
 		InterfaceServeur inter = null;
@@ -59,6 +61,7 @@ public class ConnexionJoueur implements Connexion {
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();
+			
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

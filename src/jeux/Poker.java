@@ -2,6 +2,7 @@ package jeux;
 
 import graphique.boutons.ActionsBoutons;
 import graphique.boutons.PanelBoutons;
+import graphique.carte.Carte;
 import graphique.pseudo.JPseudo;
 import graphique.table.JTable;
 
