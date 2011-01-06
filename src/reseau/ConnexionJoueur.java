@@ -46,7 +46,7 @@ public class ConnexionJoueur implements Connexion {
 		System.out.println("Local Regestry OK Client");
 		
 		//"rmi://"+adress+":"+port+"/"+bindingName, implementation);
-		Naming.rebind("rmi://localhost/client", implc);
+		Naming.rebind("rmi://Gillou-portable/client", implc);
 		System.out.println("Publication dans l'annuaire OK Client");
 		} catch (RemoteException e) {
 			e.printStackTrace();
