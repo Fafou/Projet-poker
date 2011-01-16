@@ -232,15 +232,8 @@ public class JJoueur extends JPanel {
 	 * @param mise Mise du joueur
 	 */
 	public void miser (int mise) {
+		banque -= mise;
 		jvalMise.setText(String.valueOf(mise));
-	}
-	
-	/**
-	 * Banque du joueur
-	 * @param banque Banque du joueur
-	 */
-	public void setBanque (int banque) {
-		this.banque = banque;
 		jvalBanque.setText(String.valueOf(banque));
 	}
 	
@@ -285,17 +278,17 @@ public class JJoueur extends JPanel {
 	public void ajouterGain (int gain) {
 		banque += gain;
 		jvalBanque.setText(String.valueOf(banque));
-		jvalMise.setText(" ");
-		this.finDonne();
 	}
 	
 	/**
-	 * Le joueur gagne le pot de table
+	 * Debut d'une donne, on efface tous les changements de la donne précedente
+	 * Sauf la banque.
 	 */
-	public void finDonne () {
+	public void debutDonne () {
 		jvalMise.setText(" ");
 		jtype.setText(" ");
 		carte1 = new JVide(largeur/2, hauteur/2);
 		carte2 = new JVide(largeur/2, hauteur/2);
+		this.initLayout(type);
 	}
 }

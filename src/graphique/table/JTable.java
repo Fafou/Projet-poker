@@ -290,7 +290,7 @@ public class JTable extends JPanel {
 	/**
 	 * Enlever les cartes du milieu de la table
 	 */
-	public void suppressionCartes () {
+	private void suppressionCartes () {
 		for (int i = 0; i < 5; i++) {
 			cartes.put(i, new JVide(carte_lg, carte_ht));
 		}
@@ -344,58 +344,52 @@ public class JTable extends JPanel {
 	 * Ajouter une somme au pot de la table
 	 * @param somme Somme a ajouter au pot de la table, elle doit etre positive
 	 */
-	public void ajouterPot (int somme) {
-		if (somme > 0) {
-			banque.ajouter(somme);
-		}
+	private void ajouterPot (int somme) {
+		banque.ajouter(somme);
 	}
 	
 	/**
 	 * Les vainqueurs ce partagent les gains
+	 * @param pots Valeur des pots a se partager
 	 * @param vainqueurs Vainqueurs de la donne
 	 */
-	public void vainqueurs (int [] vainqueurs) {
-		int gain = banque.getPot()/vainqueurs.length;
-		for (int i = 0; i < 10; i++) {
-			if (this.estGagnant(i, vainqueurs)) {
-				((JJoueur)joueurs.get(i)).ajouterGain(gain);
-			} else if (joueurs.get(i) instanceof JJoueur) {
-				((JJoueur)joueurs.get(i)).finDonne();
-			}
-		}
-		banque.raz();
+	public void vainqueurs (int [] pots, int [][] vainqueurs) {
+		//TODO Ajout de tous les pots
+//		if (banque.getPot() != pots) {
+//			System.err.println("Erreur JTable: vainqueurs() -> Probleme de pot de table !");
+//			System.exit(1);
+//		}
+//		
+//		int gain = banque.getPot()/vainqueurs.length;
+//		
+//		for (int i = 0; i < 10; i++) {
+//			if (this.estGagnant(i, vainqueurs)) {
+//				((JJoueur)joueurs.get(i)).ajouterGain(gain);
+//			} 
+//		}
 	}
 	
 	/**
-	 * On recherche si le joueur est gagnant
-	 * @param joueur Le joueur a tester
+	 * Debut nouvelle partie
 	 */
-	private boolean estGagnant (int joueur, int [] vainqueurs) {
-		for (int j = 0; j < vainqueurs.length; j++) {
-			if (vainqueurs[j] == joueur) {
-				return true;
-			}
+	public void start () {
+		banque.raz();
+		for (int i = 0; i < 10; i++) {
+			if (joueurs.get(i) instanceof JJoueur) {
+				((JJoueur)joueurs.get(i)).debutDonne();
+			} 
 		}
-		return false;
-	}
-
-	/**
-	 * Retourne la valeur du pot de la table
-	 * @return Valeur du pot du milieu de table
-	 */
-	public int getPot () {
-		return banque.getPot();
+		this.suppressionCartes();
 	}
 	
 	/**
 	 * Le joueur mise une somme
 	 * @param position Position du joueur qui mise
 	 * @param mise Valeur de la mise
-	 * @param banque Banque du joueur
 	 */
-	public void miser (int position, int mise, int banque) {
+	public void miser (int position, int mise) {
 		((JJoueur)joueurs.get(position)).miser(mise);
-		((JJoueur)joueurs.get(position)).setBanque(banque);
+		this.ajouterPot(mise);
 	}
 	
 	/**
@@ -436,5 +430,31 @@ public class JTable extends JPanel {
 	 */
 	public void setDealer (int position) {
 		((JJoueur)joueurs.get(position)).setDealer();
+	}
+	
+	/**
+	 * Met en valeur le joueur courant
+	 * @param position Position du joueur courant
+	 */
+	public void setJCourant (int position) {
+		//TODO Signaler le joueur courant
+	}
+	
+	/**
+	 * Un joueur fait un tapis
+	 * @param position Position du joueur
+	 * @param valeur Valeur du tapis
+	 */
+	public void tapis (int position, int valeur) {
+		//TODO Faire tapis pour un joueur
+		//TODO Créer un nouveau pot de table
+	}
+	
+	/**
+	 * Initialise les pots de table lorsque l'on rejoind la partie
+	 * @param pots Les pots de table
+	 */
+	public void setPots (int[] pots) {
+		//TODO Ajouter les pots
 	}
 }

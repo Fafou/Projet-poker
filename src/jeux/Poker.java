@@ -1,28 +1,19 @@
 package jeux;
 
-import graphique.boutons.ActionsBoutons;
-import graphique.boutons.PanelBoutons;
-import graphique.carte.Carte;
+import graphique.boutons.JBoutons;
 import graphique.pseudo.JPseudo;
 import graphique.table.JTable;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
-import reseau.Connexion;
-
-import reseau.ConnexionDealer;
-import reseau.ConnexionJoueur;
 import reseau.Global;
-import reseau.ImpClient;
-import reseau.InterfaceServeur;
+import reseau.client.ConnexionAuServeur;
+import reseau.serveur.ConnexionDuServeur;
 
 /**
  * Lancement du jeux
@@ -30,8 +21,10 @@ import reseau.InterfaceServeur;
  *@version 0.1
  **/
 public class Poker {
-	
-	InterfaceServeur inter;
+	/**
+	 * Fenètre principale
+	 */
+	private JFrame frame;
 	
 	/**
 	 * Fonction principale, elle lance la fenètre où on rentre le pseudo
@@ -39,27 +32,45 @@ public class Poker {
 	 */
 	public static void main(String[] args) {
 		Poker poker = new Poker();
-		Global.poker = poker;
-		JPseudo jpseudo = new JPseudo(poker);
-		jpseudo.setVisible();
+		JPseudo jPseudo = new JPseudo(poker);
+		jPseudo.setVisible();
 	}
-
+	
 	/**
-	 * Lancemant de la partie de poker avec le bon pseudo
-	 * @param pseudo Nom de la personne jouant
+	 * Le pseudo est rendré, on doit donc lancer le client
+	 * et le serveur si necessaire
 	 */
-	public void lancementPartie (String pseudo) {
+	public void lancementPartie () {
+		this.makeFrame();
 		
-		// init pseudo
-		Global.pseudo = pseudo;
-		
-		
-		JFrame frame = new JFrame("Poker - " + pseudo);
+		if (Global.isServeur) {
+			ConnexionDuServeur serveur = new ConnexionDuServeur();
+			serveur.sEnregister();
+		}
+
+		try {
+			ConnexionAuServeur client = new ConnexionAuServeur(InetAddress.getLocalHost().getHostAddress());
+			client.connexion();
+		} catch (Exception e) {
+			frame.setVisible(false);
+			JOptionPane.showMessageDialog(new JFrame("Message"), "L'adresse IP du serveur est invalide\nou aucun serveur n'est lancé à cette adresse !");
+			JPseudo jPseudo = new JPseudo(this);
+			jPseudo.setVisible();
+		}
+	}
+	
+	/**
+	 * Fabrique la fenètre principale
+	 */
+	private void makeFrame () {
+		frame = new JFrame("Poker - " + Global.pseudo);
 		frame.setResizable(false);
-		JTable table = Global.getJTable(); // créée dans la classe Global
-		PanelBoutons boutons = Global.getPanelBoutons();
-		@SuppressWarnings("unused")
-		ActionsBoutons AcBtn = new ActionsBoutons(boutons);
+		
+		JTable table = new JTable();
+		JBoutons boutons = new JBoutons();
+		Global.jTable = table;
+		Global.boutons = boutons;
+		
 		frame.setBounds(5, 5, 1270, 750);
 		GridBagLayout layout = new GridBagLayout();
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -75,114 +86,13 @@ public class Poker {
 		constraints.gridheight = 1;
 		layout.addLayoutComponent(boutons, constraints);
 		frame.add(boutons);
+		
+		boutons.afficherBoutons(new int[] {0});
+		
 		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		AdapterFermeture fermeture = new AdapterFermeture();
+		frame.addWindowListener(fermeture);
 	}
-	
-	
-	public void gestionConnexion() throws RemoteException {
-		Connexion connect;
-		if(Global.dealer == true){
-			connect = new ConnexionDealer();
-		}else {
-			connect = new ConnexionJoueur();
-		}
-		
-		try 
-		{
-			inter = connect.Connexion();
-			
-		} catch (MalformedURLException e) {
-					e.printStackTrace();
-		}
-		
-		// init du serveur
-		Global.interS = inter;
-		
-		// init du client
-		Global.interC = new ImpClient();
-		
-		System.out.println(Global.interC.toString());
-		
-		
-		
-		try {
-			 
-			if(connect instanceof ConnexionDealer){
-				Object[] infosPJ = {Global.pseudo, 1500, InetAddress.getLocalHost(), Global.interC};
-				Global.uuid = inter.envoiInformationsJoueur(infosPJ);
-			}else{
-				Object[] infosPJ = {Global.pseudo, 1500, InetAddress.getLocalHost()};
-				Global.uuid = inter.envoiInformationsJoueur(infosPJ);
-			}
-			
-			
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	
-	
-	
-	public void gestionActions(int action){
-		switch (action) {
-		case 2: 
-			{
-				try {
-			
-				Global.interS.suivre(Global.uuid);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			break;
-			
-		case 3: {
-			try {
-				
-				Global.interS.relancer(Global.uuid, Global.mise);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
-			break;
-		
-		case 4: {
-			try {
-				
-				Global.interS.faireTapis(Global.uuid);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
-			break;
-		
-		case 5: {
-			try {
-				
-				Global.interS.seCoucher(Global.uuid);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
-			break;
-		
-			
-		default:
-			break;
-		}
-	}
-	
-	
 }
 

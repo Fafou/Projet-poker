@@ -61,6 +61,30 @@ public class Carte implements Comparable<Carte>{
 
 	}
 
-
+	/**
+	 * On surcharge l'opperateur equals
+	 * @param o Object avec le quel on veux comparer
+	 * @return Retourne si les deux object sont égaux
+	 */
+	public boolean equals(Object obj) {
+		if (obj instanceof Carte) {
+			Carte c = (Carte) obj;
+			if (this.couleur == c.getCouleur()) {
+				if (this.valeur == c.getValeur()) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * On surcharge la méthode hashCode
+	 * @return Un entier caractérisant la carte
+	 */
+	public int hashCode () {
+		return couleur*100 + valeur;
+	}
 }
 

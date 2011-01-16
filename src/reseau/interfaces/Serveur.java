@@ -10,13 +10,22 @@ import java.rmi.RemoteException;
  **/
 public interface Serveur extends Remote{
 	/**
-	 * Ajouter un joueur
+	 * Se mettre au tour de la table pour regarder la partie
+	 * @param addr Adresse réseau du spectateur
+	 * @return UID du spectateur ajouté
+	 * @throws RemoteException
+	 */
+	int regarder (String addr) throws RemoteException;
+	
+	/**
+	 * Le spectateur veut devenir joueur
+	 * @param uid UID du joueur qui rejoind la partie
 	 * @param pseudo Nom du joueur
 	 * @param position Position du joueur au tour de la	table
-	 * @return UID du joueur ajouté
+	 * @return Retourne si l'ajout est possible ou non
 	 * @throws RemoteException
 	 **/
-	int miseAJourTable (String pseudo, int position) throws RemoteException;
+	boolean rejoindre (int uid, String pseudo, int position) throws RemoteException;
 	
 	/**
 	 * Quitter la partie
@@ -34,6 +43,7 @@ public interface Serveur extends Remote{
 	 * 				3 -> relancer
 	 * 				4 -> tapis
 	 * 				5 -> seCoucher
+	 * 				6 -> ouvrir
 	 * @param montant Valeur de la mise ou du tapis
 	 * @throws RemoteException
 	 **/
@@ -45,3 +55,5 @@ public interface Serveur extends Remote{
 	 **/
 	void start () throws RemoteException;
 }
+//TODO Gérer lors de l'ajout si le joueur est à la fois dealer et petite blende
+//TODO Gérer le changement de serveur quand la personne qui part est le serveur

@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
-import reseau.Joueur;
+
+import reseau.serveur.Joueur;
 
 
 /**
@@ -322,7 +323,11 @@ public class CalculMain {
 		while(gagnants.isEmpty()) {
 			for(Joueur joueur: joueurListe){
 				listeCarte.clear();
-				listeCarte.addAll(stringToCarte(joueur.getCarte()));
+				Carte[] cartes = joueur.getCartes();
+				List<Carte> c = new ArrayList<Carte>();
+				c.add(cartes[0]);
+				c.add(cartes[1]);
+				listeCarte.addAll(c);
 				listeCarte.addAll(stringToCarte(carteListe));
 				t=calculDeLaMain(listeCarte, i);
 				if(t[0]!=-1) {

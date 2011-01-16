@@ -1,5 +1,7 @@
 package reseau.interfaces;
 
+import graphique.carte.Carte;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -21,25 +23,42 @@ public interface Client extends Remote{
 	
 	/**
 	 * Mise à jour de la position du dealer
-	 * @param position Position du nouveau dealer
+	 * @param uids Tableau d'UID des joueurs qui deviennent Dealer, grosse Blende et petite blende
 	 * @throws RemoteException
 	 **/
-	void setDealer (int position) throws RemoteException;
+	void setDealer (int[] uids) throws RemoteException;
 	
 	/**
 	 * Ajouter des cartes
 	 * @param uid UID du joueur, si -1 les cartes sont ajoutées à la table
-	 * @param object Cartes, soit du joueur soit de la table
+	 * @param cartes Cartes, soit du joueur soit de la table
 	 * @throws RemoteException
 	 **/
-	void ajouterCartes (int uid, Object[] object) throws RemoteException;
+	void ajouterCartes (int uid, Carte[] cartes) throws RemoteException;
 	
 	/**
-	 * Informer le joueur courant que c'est a lui de jouer
+	 * Informe quel joueur doit jouer
 	 * @param uid UID du joueur qui doit jouer
+	 * @param boutons Actions que le joueur peut réaliser
+	 * 		1 -> Se coucher
+	 * 		2 -> Suivre
+	 * 		3 -> Relancer
+	 * 		4 -> Fin de l'enchère
+	 * 		5 -> Parole
+	 * 		6 -> Ouvrir
+	 * 		7 -> pourVoir
+	 * 		8 -> lancer partie
 	 * @throws RemoteException
 	 **/
-	void setJoueur (int uid) throws RemoteException;
+	void setJoueur (int uid, int[] boutons) throws RemoteException;
+	
+	/**
+	 * Informe des valeurs à dépanser pour suivre, ou relancer
+	 * @param valeurs 1 -> Valeur de la somme pour pouvoir suivre
+	 * 				  2 -> Valeur de la somme pour relancer
+	 * @throws RemoteException
+	 */
+	void setValeurSuivRel (int[] valeurs) throws RemoteException;
 	
 	/**
 	 * Information sur une action joueur
@@ -57,15 +76,23 @@ public interface Client extends Remote{
 	
 	/**
 	 * Fin de partie, on donne les vainqueurs
-	 * @param montant Valeur du pot a partager entre les vainqueurs
-	 * @param joueurs Liste des uid des joueurs qui doivent se partager le pot de table
+	 * @param pots Valeurs des pots a partager entre les différents vainqueurs
+	 * 		Il peut y avoir plusieurs pots si des joueurs ont fait tapis
+	 * @param vainqueurs Liste de liste d'UID de joueurs gagnants, une liste par pots
 	 * @throws RemoteException
 	 */
-	void setVainqueurs (int montant, int[] joueurs) throws RemoteException;
+	void setVainqueurs (int[] pots, int[][] vainqueurs) throws RemoteException;
 	
 	/**
 	 * Signal du lancement de la partie
 	 * @throws RemoteException
 	 **/
 	void start () throws RemoteException;
+	
+	/**
+	 * Initialise les pots de table lorsque l'on rejoind la partie
+	 * @param pots Les pots de table
+	 * @throws RemoteException
+	 */
+	void setPots (int[] pots) throws RemoteException;
 }

@@ -4,6 +4,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -31,7 +33,7 @@ public class JPseudo extends JFrame implements ActionListener {
 	
 	// Label où l'utilisateur rentre l'adresse IP du serveur
 	private JLabel infoIP = new JLabel("Adresse IP du serveur : ");
-	private JTextField ip = new JTextField("192.168.1.32");
+	private JTextField ip = new JTextField("255.255.255.255");
 	
 	// Choisit si on est le dealer ou pas
 	private JCheckBox dealer = new JCheckBox("Suis-je le dealer(Cochez pour oui) :", false);
@@ -44,6 +46,7 @@ public class JPseudo extends JFrame implements ActionListener {
 	
 	/**
 	 * Affichage de la fenètre et vérification du pseudo
+	 * @param poker Programme principal qui lance cette fenètre
 	 **/
 	public JPseudo (Poker poker) {
 		this.poker = poker;
@@ -83,21 +86,34 @@ public class JPseudo extends JFrame implements ActionListener {
 		this.add(btn_valider);
 		btn_valider.addActionListener(this);
 	}
-	
-	// Affichage de la fenètre
+
+	/**
+	 * La fenètre passe visible
+	 **/
 	public void setVisible () {
 		this.setVisible(true);
 	}
 
-	@Override
+	/**
+	 * Actions a réaliser lorsque l'on clique sur le bouton valider
+	 * @param e Action qui a réveillé le listener
+	 **/
 	public void actionPerformed(ActionEvent e) {
 		String pseudo = this.pseudo.getText();
-		System.out.println(pseudo);
 		if ((!pseudo.equalsIgnoreCase(texte))&&(!pseudo.equalsIgnoreCase(""))) {
 			this.setVisible(false);
-			Global.ip = ip.getText();
-			Global.dealer = dealer.isSelected();
-			poker.lancementPartie(pseudo);
+			if (ip.getText().equalsIgnoreCase("localhost") || ip.getText().equalsIgnoreCase("127.0.0.1")) {
+				try {
+					Global.IPServeur = InetAddress.getLocalHost().getHostAddress();
+				} catch (UnknownHostException e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				Global.IPServeur = ip.getText();
+			}
+			Global.isServeur = dealer.isSelected();
+			Global.pseudo = pseudo;
+			poker.lancementPartie();
 		}
 	}
 }
