@@ -433,6 +433,8 @@ public class JTable extends JPanel {
 	 * @param valeur Valeur du tapis
 	 */
 	public void tapis (int position, int valeur) {
+		((JJoueur)joueurs.get(position)).miser(valeur);
+		this.ajouterPot(valeur);
 		//TODO Faire tapis pour un joueur
 		//TODO Créer un nouveau pot de table
 	}

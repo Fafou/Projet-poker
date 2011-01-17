@@ -44,6 +44,11 @@ public class Joueur {
 	 * et le faire quitter à la fin de la donne
 	 */
 	private boolean present;
+	
+	/**
+	 * Status du joueur, s'il est couché ou non
+	 */
+	private boolean status;
 
 	/**
 	 * Initialise un joueur
@@ -58,6 +63,7 @@ public class Joueur {
 		this.uid = uid;
 		this.banque = banque;
 		present = true;
+		status = false;
 	}
 	
 	/**
@@ -122,7 +128,7 @@ public class Joueur {
 	 * Retourne le status du joueur, s'il a quitté ou non
 	 * @return Status du joueur
 	 */
-	public boolean getStatus () {
+	public boolean isPresent () {
 		return present;
 	}
 	
@@ -131,5 +137,21 @@ public class Joueur {
 	 */
 	public void changerStatus () {
 		present = false;
+	}
+
+	/**
+	 * Change le status du joueur
+	 * @param status Le nouveaux status
+	 */
+	public void setCouche(boolean status) {
+		this.status = status;
+	}
+	
+	/**
+	 * Récupère le status du joueur
+	 * @return
+	 */
+	public boolean isCouche () {
+		return status;
 	}
 }

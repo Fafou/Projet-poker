@@ -209,6 +209,7 @@ public class JBoutons extends JPanel implements ActionListener {
 		this.removeAll();
 		layout = new GridBagLayout();
 		this.setLayout(layout);
+		this.repaint();
 	}
 
 	/**
@@ -232,43 +233,43 @@ public class JBoutons extends JPanel implements ActionListener {
 			}
 		} else if (e.getSource() == seCoucher) {
 			try {
-				Global.serveur.setAction(Global.UID, 5, Global.UID);
 				this.setQuitter();
+				Global.serveur.setAction(Global.UID, 5, Global.UID);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == suivre) {
 			try {
-				Global.serveur.setAction(Global.UID, 2, Global.valSuivre);
 				this.setQuitter();
+				Global.serveur.setAction(Global.UID, 2, Global.valSuivre);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == relancer) {
 			try {
-				Global.serveur.setAction(Global.UID, 3, Global.valRelancer);
 				this.setQuitter();
+				Global.serveur.setAction(Global.UID, 3, Global.valRelancer);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == fin) {
 			try {
-				Global.serveur.setAction(Global.UID, 7, Global.UID);
 				this.setQuitter();
+				Global.serveur.setAction(Global.UID, 7, Global.UID);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == check) {
 			try {
-				Global.serveur.setAction(Global.UID, 1, Global.UID);
 				this.setQuitter();
+				Global.serveur.setAction(Global.UID, 1, Global.UID);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == ouvrir) {
 			try {
-				Global.serveur.setAction(Global.UID, 6, Global.valSuivre);
 				this.setQuitter();
+				Global.serveur.setAction(Global.UID, 6, Global.valSuivre);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
@@ -287,8 +288,8 @@ public class JBoutons extends JPanel implements ActionListener {
 			System.exit(0);
 		} else if (e.getSource() == tapis) {
 			try {
-				Global.serveur.setAction(Global.UID, 4, Global.banque);
 				this.setQuitter();
+				Global.serveur.setAction(Global.UID, 4, Global.banque);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}

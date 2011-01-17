@@ -49,7 +49,6 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 		if (type == 0) {
 			if (((Integer)object[0]) == Global.UID) {
 				Global.banque = (Integer) object[2];
-				Global.position = (Integer) object[3];
 				Global.boutons.setQuitter();
 			}
 			Global.jTable.ajoutJoueur((String) object[1], (Integer) object[2], (Integer) object[3]);
@@ -176,7 +175,7 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 			case 2:
 			case 3:
 			case 4:
-			case 6: Global.banque -= montant;
+			case 6: Global.banque = Global.banque - montant;
 				break;
 			}
 		} 

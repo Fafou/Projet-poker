@@ -301,6 +301,7 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 			joueur.setBanque(joueur.getBanque() - montant);
 			break;
 		case 5: this.diffuserAction(uid, 5, montant);
+			joueurs.get(uid).setCouche(true);
 			break;
 		case 6: this.diffuserAction(uid, 2, montant);
 			checkable = false;
@@ -309,7 +310,7 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 		case 7:
 			break;
 		}
-		//TODO Gérer petite et grosse blinde
+		//TODO Gérer petite et grosse blinde qui ont juste a ajouter ce qu'il manque
 		this.diffuserValSR(BLENDE * 2, BLENDE * 4);
 		int suivant = this.getJSuivant(joueurs.get(uid).getPosition() + 1);
 		if (checkable) {
@@ -317,8 +318,8 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 		} else {
 			this.diffuserJCourant(suivant, new int[] {1, 2, 3, 9});
 		}
+		//TODO Gérer que si tous le monde ce couche, la fonction getJSuivant tourne en rond
 	}
-//TODO modifier getJSuivant pour pas tenir compte des joueurs couché, si sa pose pas de problèmes
 	
 	/**
 	 * Signal du lancement de la partie
@@ -402,7 +403,7 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 		}
 		
 		for (Joueur j : joueurs.values()) {
-			if (j.getPosition() == indice) {
+			if (j.getPosition() == indice && !j.isCouche()) {
 				return j.getUID();
 			}
 		}

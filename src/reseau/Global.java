@@ -64,9 +64,4 @@ public class Global {
 	 * Valeur de notre banque
 	 */
 	public static int banque;
-	
-	/**
-	 * Notre position au tour de la table
-	 */
-	public static int position;
 }
