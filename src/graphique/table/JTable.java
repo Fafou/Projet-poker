@@ -308,7 +308,6 @@ public class JTable extends JPanel {
 				((JCarte)cartes.get(position)).retournerCarte();
 			}
 		} else {
-			System.out.println("Retourner JJoueur");
 			if (joueurs.get(position) instanceof JJoueur) {
 				((JJoueur)joueurs.get(position)).retournerCartes();
 			}
@@ -350,23 +349,11 @@ public class JTable extends JPanel {
 	
 	/**
 	 * Les vainqueurs ce partagent les gains
-	 * @param pots Valeur des pots a se partager
-	 * @param vainqueurs Vainqueurs de la donne
+	 * @param vainqueurs HashMap de vainqueurs avec en clef l'uid du joueur
+	 * 			et en valeur le montant du gain
 	 */
-	public void vainqueurs (int [] pots, int [][] vainqueurs) {
-		//TODO Ajout de tous les pots
-//		if (banque.getPot() != pots) {
-//			System.err.println("Erreur JTable: vainqueurs() -> Probleme de pot de table !");
-//			System.exit(1);
-//		}
-//		
-//		int gain = banque.getPot()/vainqueurs.length;
-//		
-//		for (int i = 0; i < 10; i++) {
-//			if (this.estGagnant(i, vainqueurs)) {
-//				((JJoueur)joueurs.get(i)).ajouterGain(gain);
-//			} 
-//		}
+	public void vainqueurs (HashMap<Integer, Integer> vainqueurs) {
+		// Mettre a jour Global.banque si on gagne
 	}
 	
 	/**

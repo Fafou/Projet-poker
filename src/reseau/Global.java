@@ -54,4 +54,19 @@ public class Global {
 	 * Nom du joueur
 	 */
 	public static String pseudo;
+	
+	/**
+	 * Signale si on joue ou si on regarde
+	 */
+	public static boolean isGaming;
+	
+	/**
+	 * Valeur de notre banque
+	 */
+	public static int banque;
+	
+	/**
+	 * Notre position au tour de la table
+	 */
+	public static int position;
 }

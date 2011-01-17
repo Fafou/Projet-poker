@@ -4,6 +4,7 @@ import graphique.carte.Carte;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 /**
  * Interface client
@@ -48,6 +49,7 @@ public interface Client extends Remote{
 	 * 		6 -> Ouvrir
 	 * 		7 -> pourVoir
 	 * 		8 -> lancer partie
+	 * 		9 -> Tapis
 	 * @throws RemoteException
 	 **/
 	void setJoueur (int uid, int[] boutons) throws RemoteException;
@@ -76,12 +78,11 @@ public interface Client extends Remote{
 	
 	/**
 	 * Fin de partie, on donne les vainqueurs
-	 * @param pots Valeurs des pots a partager entre les différents vainqueurs
-	 * 		Il peut y avoir plusieurs pots si des joueurs ont fait tapis
-	 * @param vainqueurs Liste de liste d'UID de joueurs gagnants, une liste par pots
+	 * @param vainqueurs HashMap de vainqueurs avec en clef l'uid du joueur
+	 * 			et en valeur le montant du gain
 	 * @throws RemoteException
 	 */
-	void setVainqueurs (int[] pots, int[][] vainqueurs) throws RemoteException;
+	void setVainqueurs (HashMap<Integer, Integer> vainqueurs) throws RemoteException;
 	
 	/**
 	 * Signal du lancement de la partie

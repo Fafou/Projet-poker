@@ -19,7 +19,7 @@ public class AdapterFermeture extends WindowAdapter {
 		try {
 			Global.serveur.quitter(Global.UID);
 		} catch (RemoteException e1) {
-			e1.printStackTrace();
+	
 		}
 		System.exit(0);
 	}

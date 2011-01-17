@@ -109,7 +109,15 @@ public class JPseudo extends JFrame implements ActionListener {
 					e1.printStackTrace();
 				}
 			} else {
-				Global.IPServeur = ip.getText();
+				if (dealer.isSelected()) {
+					try {
+						Global.IPServeur = InetAddress.getLocalHost().getHostAddress();
+					} catch (UnknownHostException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					Global.IPServeur = ip.getText();
+				}
 			}
 			Global.isServeur = dealer.isSelected();
 			Global.pseudo = pseudo;

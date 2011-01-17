@@ -46,16 +46,17 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 */
 	@Override
 	public void miseAJourTable(int type, Object[] object)throws RemoteException {
-		System.out.println("Client : miseAJourTable");
 		if (type == 0) {
 			if (((Integer)object[0]) == Global.UID) {
+				Global.banque = (Integer) object[2];
+				Global.position = (Integer) object[3];
 				Global.boutons.setQuitter();
 			}
 			Global.jTable.ajoutJoueur((String) object[1], (Integer) object[2], (Integer) object[3]);
 			joueurs.put((Integer)object[0],(Integer)object[3]);
 		} else if (type == 1) {
 			if (((Integer)object[0]) == Global.UID) {
-				//TODO Quitter proprement en fermant les interfaces si nécessaire
+				System.out.println("Au revoir.");
 				System.exit(0);
 			}
 			Global.jTable.suppressionJoueur(joueurs.get((Integer)object[0]));
@@ -73,7 +74,6 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 */
 	@Override
 	public void setDealer(int[] uids) throws RemoteException {
-		System.out.println("Client : setDealer");
 		switch (uids.length) {
 		case 3 : Global.jTable.setPBlend(joueurs.get(uids[2]));
 		case 2 : Global.jTable.setGBlend(joueurs.get(uids[1]));
@@ -94,7 +94,6 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 */
 	@Override
 	public void ajouterCartes(int uid, Carte[] cartes) throws RemoteException {
-		System.out.println("Client : ajouterCartes");
 		switch (uid) {
 		case -1 : for (int i = 0; i < cartes.length; i++) {
 				Global.jTable.ajoutCarte(cartes[i], nbCartesTable);
@@ -119,10 +118,10 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 * 		6 -> Ouvrir
 	 * 		7 -> pourVoir
 	 * 		8 -> lancer partie
+	 * 		9 -> Tapis
 	 * @throws RemoteException
 	 **/
 	public void setJoueur (int uid, int[] boutons) throws RemoteException {
-		System.out.println("Client : setJoueur");
 		Global.jTable.setJCourant(joueurs.get(uid));
 		
 		if (uid == Global.UID) {
@@ -137,7 +136,6 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 * @throws RemoteException
 	 */
 	public void setValeurSuivRel (int[] valeurs) throws RemoteException {
-		System.out.println("Client : setValeurSuivRel");
 		Global.valSuivre = valeurs[0];
 		Global.valRelancer = valeurs[1];
 		Global.boutons.majMise();
@@ -158,7 +156,6 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 */
 	@Override
 	public void setAction(int uid, int type, int montant) throws RemoteException {
-		System.out.println("Client : setAction");
 		switch (type) {
 		case 1 : Global.jTable.checker(joueurs.get(uid));
 			break;
@@ -172,31 +169,39 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 		case 6 : Global.jTable.miser(joueurs.get(uid), montant);
 			break;
 		}
+		
+		// Mise à jour de notre banque si c'est nous
+		if (uid == Global.UID) {
+			switch (type) {
+			case 2:
+			case 3:
+			case 4:
+			case 6: Global.banque -= montant;
+				break;
+			}
+		} 
 	}
 
 	/**
 	 * Fin de partie, on donne les vainqueurs
-	 * @param pots Valeurs des pots a partager entre les différents vainqueurs
-	 * 		Il peut y avoir plusieurs pots si des joueurs ont fait tapis
-	 * @param vainqueurs Liste de liste d'UID de joueurs gagnants, une liste par pots
+	 * @param vainqueurs HashMap de vainqueurs avec en clef l'uid du joueur
+	 * 			et en valeur le montant du gain
 	 * @throws RemoteException
 	 */
-	public void setVainqueurs (int[] pots, int[][] vainqueurs) throws RemoteException {
-		System.out.println("Client : setVainqueurs");
-		Global.jTable.vainqueurs(pots, uidTOposition(vainqueurs));
+	public void setVainqueurs (HashMap<Integer, Integer> vainqueurs) throws RemoteException {
+		Global.jTable.vainqueurs(uidTOposition(vainqueurs));
 	}
 	
 	/**
 	 * Fait la corespondance entre les uids des vainqueurs et leur position sur la table
-	 * @param vainqueurs Liste des uids des vainqueurs
+	 * @param vainqueurs HashMap de vainqueurs avec en clef l'uid du joueur
+	 * 			et en valeur le montant du gain
 	 * @return Liste des positions des vainqueurs
 	 */
-	private int[][] uidTOposition (int[][] vainqueurs) {
-		int [][] positionsV = vainqueurs;
-		for (int i = 0; i < vainqueurs.length; i++) {
-			for (int j = 0; j < vainqueurs[i].length; j++) {
-				positionsV[i][j] = joueurs.get(vainqueurs[i][j]);
-			}
+	private HashMap<Integer, Integer> uidTOposition (HashMap<Integer, Integer> vainqueurs) {
+		HashMap<Integer, Integer> positionsV = new HashMap<Integer, Integer>();
+		for (Integer uid : vainqueurs.keySet()) {
+			positionsV.put(joueurs.get(uid), vainqueurs.get(uid));
 		}
 		return positionsV;
 	}
@@ -207,7 +212,6 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 */
 	@Override
 	public void start() throws RemoteException {
-		System.out.println("Client : start");
 		nbCartesTable = 0;
 		Global.jTable.start();
 	}
@@ -218,7 +222,6 @@ public class ImplementationClient extends UnicastRemoteObject implements Client 
 	 * @throws RemoteException
 	 */
 	public void setPots (int[] pots) throws RemoteException {
-		System.out.println("Client : setPots");
 		Global.jTable.setPots(pots);
 	}
 }

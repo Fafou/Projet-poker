@@ -1,5 +1,7 @@
 package graphique.carte;
 
+import java.io.Serializable;
+
 
 /**
  * Une carte de jeu :
@@ -8,8 +10,12 @@ package graphique.carte;
  * @author Benjamin
  * @version 0.1
  **/
-public class Carte implements Comparable<Carte>{
+public class Carte implements Comparable<Carte>, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int couleur;
 	private int valeur;
 	

@@ -6,7 +6,6 @@ import graphique.table.JTable;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.net.InetAddress;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -49,7 +48,7 @@ public class Poker {
 		}
 
 		try {
-			ConnexionAuServeur client = new ConnexionAuServeur(InetAddress.getLocalHost().getHostAddress());
+			ConnexionAuServeur client = new ConnexionAuServeur(Global.IPServeur);
 			client.connexion();
 		} catch (Exception e) {
 			frame.setVisible(false);
@@ -63,6 +62,7 @@ public class Poker {
 	 * Fabrique la fenètre principale
 	 */
 	private void makeFrame () {
+		Global.isGaming = false;
 		frame = new JFrame("Poker - " + Global.pseudo);
 		frame.setResizable(false);
 		

@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import reseau.interfaces.Client;
 import reseau.interfaces.Serveur;
@@ -80,6 +81,11 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 	 * avec plusieurs client sur le meme poste, il ne peux y en avoir qqu'un qui lance la partie
 	 */
 	private boolean sansDealer;
+	
+	/**
+	 * Signale si le check est possible ou pas
+	 */
+	private boolean checkable;
 
 	/**
 	 * Constructeur de la classe
@@ -107,7 +113,6 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 	 * @throws RemoteException
 	 */
 	public int regarder (String addr) throws RemoteException {
-		System.out.println("Serveur : regarder");
 		// Calcul de l'uid du spectateur
 		int UID = (int) (Math.random() * 10000);
 		
@@ -159,9 +164,13 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 	 * @throws RemoteException
 	 **/
 	public boolean rejoindre (int uid, String pseudo, int position) throws RemoteException {
-		System.out.println("Serveur : rejoindre");
 		if ((joueurs.size() + attente.size()) > 9) {
 			// La table est pleine
+			return false;
+		}
+		
+		if (this.estPrise(position)) {
+			// La place est prise
 			return false;
 		}
 		
@@ -199,13 +208,34 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 	}
 	
 	/**
+	 * Teste si une place est prise
+	 * @param place Numéro de la place a tester
+	 * @return Vraie si la place est prise
+	 */
+	private boolean estPrise (int place) {
+		for (Joueur j : joueurs.values()) {
+			if (j.getPosition() == place) {
+				return true;
+			}
+		}
+		
+		for (Joueur j : attente.values()) {
+			if (j.getPosition() == place) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	/**
 	 * Quitter la partie
 	 * @param uid UID du joueur qui quitte la partie
 	 * @throws RemoteException
 	 **/
 	@Override
 	public void quitter(int uid) throws RemoteException {
-		System.out.println("Serveur : quitter");
+		spectateurs.remove(uid);
 		if (commencee) {
 			if (joueurs.containsKey(uid)) {
 				joueurs.get(uid).changerStatus();
@@ -235,7 +265,6 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 		} else if (attente.containsKey(uid)) {
 			attente.remove(uid);
 		} 
-		spectateurs.remove(uid);
 	}
 	
 	/**
@@ -248,33 +277,68 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 	 * 				4 -> tapis
 	 * 				5 -> seCoucher
 	 * 				6 -> ouvrir
+	 * 				7 -> fin de l'enchère
 	 * @param montant Valeur de la mise ou du tapis
 	 * @throws RemoteException
 	 **/
 	@Override
 	public void setAction(int uid, int type, int montant) throws RemoteException {
-		System.out.println("Serveur : setAction");
+		Joueur joueur = joueurs.get(uid);
+		switch (type) {
+		case 1: this.diffuserAction(uid, 1, montant);
+			break;
+		case 2: this.diffuserAction(uid, 2, montant);
+			checkable = false;
+			joueur.setBanque(joueur.getBanque() - montant);
+			break;
+		case 3: this.diffuserAction(uid, 3, montant);
+			checkable = false;
+			relance = true;
+			joueur.setBanque(joueur.getBanque() - montant);
+			break;
+		case 4: this.diffuserAction(uid, 4, montant);
+			checkable = false;
+			joueur.setBanque(joueur.getBanque() - montant);
+			break;
+		case 5: this.diffuserAction(uid, 5, montant);
+			break;
+		case 6: this.diffuserAction(uid, 2, montant);
+			checkable = false;
+			relance = true;
+			break;
+		case 7:
+			break;
+		}
+		//TODO Gérer petite et grosse blinde
+		this.diffuserValSR(BLENDE * 2, BLENDE * 4);
+		int suivant = this.getJSuivant(joueurs.get(uid).getPosition() + 1);
+		if (checkable) {
+			this.diffuserJCourant(suivant, new int[] {5, 6, 9});
+		} else {
+			this.diffuserJCourant(suivant, new int[] {1, 2, 3, 9});
+		}
 	}
+//TODO modifier getJSuivant pour pas tenir compte des joueurs couché, si sa pose pas de problèmes
 	
 	/**
 	 * Signal du lancement de la partie
 	 * @throws RemoteException
 	 **/
 	@Override
-	public void start() throws RemoteException {
-		System.out.println("Serveur : start");
+	public boolean start() throws RemoteException {
 		// Si on est tous seul, on peux pas jouer
 		if (joueurs.size() > 1) {
 			commencee = true;
 			table.setEnchere(1);
 			table.setNbTour(0);
 			relance = false;
+			checkable = false;
 			
 			// On signale le lancement de la partie
 			this.diffuserStart();
 			
 			// Mise a jour du dealer, petite blende et grosse blende
-			if (table.getDealer()[0] == -1) {
+			if (table.getDealer() == null) {
 				table.setDealer(notreUID);
 			}
 			this.chercherPGBlende();
@@ -305,8 +369,11 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 			}
 			
 			// On diffuse l'uid du joueur courant et les actions qu'il peux réaliser
-			this.diffuserJCourant(uidSuivant, new int[] {1, 2, 3});
+			this.diffuserJCourant(uidSuivant, new int[] {1, 2, 3, 9});
+			
+			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -355,17 +422,17 @@ public class ImplementationServeur extends UnicastRemoteObject implements Serveu
 		}
 		
 		// On Ajoute les cartes au joueurs
-		Carte[] c = (Carte[]) cartes.toArray();
+		Iterator<Carte> c = cartes.iterator();
 		int i = 0;
 		for (Joueur j : joueurs.values()) {
-			j.setCartes(c[i*2], c[i*2 + 1]);
+			j.setCartes(c.next(), c.next());
 			i++;
 		}
 		
 		// On ajoute les cartes à la table
-		table.setCarte(1, c[i*2]);
-		table.setCarte(2, c[i*2 + 1]);
-		table.setCarte(3, c[i*2 + 2]);
+		table.setCarte(1, c.next());
+		table.setCarte(2, c.next());
+		table.setCarte(3, c.next());
 		
 		// On distribue les cartes sur le réseau
 		for (Integer key : spectateurs.keySet()) {

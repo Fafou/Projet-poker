@@ -1,5 +1,6 @@
 package graphique.boutons;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -32,6 +33,7 @@ public class JBoutons extends JPanel implements ActionListener {
 	private JButton ouvrir;
 	private JButton commencer;
 	private JButton quitter;
+	private JButton tapis;
 	
 	/**
 	 * Champs pour afficher les valeurs du suivit et de la relance
@@ -61,6 +63,7 @@ public class JBoutons extends JPanel implements ActionListener {
 		ouvrir = new JButton("Ouvrir");
 		commencer = new JButton("Commencer");
 		quitter = new JButton("Quitter");
+		tapis = new JButton("Tapis");
 		
 		// Initialisation des champs
 		etiSuivre = new JLabel("Suivre :");
@@ -85,7 +88,9 @@ public class JBoutons extends JPanel implements ActionListener {
 		ouvrir.addActionListener(this);
 		commencer.addActionListener(this);
 		quitter.addActionListener(this);
+		tapis.addActionListener(this);
 		
+		this.setPreferredSize(new Dimension(1000, 150));
 		this.setVisible(true);
 	}
 	
@@ -100,71 +105,65 @@ public class JBoutons extends JPanel implements ActionListener {
 	 * 		5 -> Parole
 	 * 		6 -> Ouvrir
 	 * 		8 -> lancer partie
+	 * 		9 -> Tapis
 	 */
 	public void afficherBoutons (int[] boutons) {
 		this.razAffichage();
-		contraintes.gridx = 0;
-		contraintes.gridy = 0;
+		contraintes.gridwidth = GridBagConstraints.RELATIVE;
 		for (int i = 0; i < boutons.length; i++) {
 			switch (boutons[i]) {
 			case 0:
 				layout.addLayoutComponent(rejoindre, contraintes);
 				this.add(rejoindre);
-				contraintes.gridx++;
 				break;
 			case 1:
 				layout.addLayoutComponent(seCoucher, contraintes);
 				this.add(seCoucher);
-				contraintes.gridx++;
 				break;
 			case 2:
 				layout.addLayoutComponent(suivre, contraintes);
 				this.add(suivre);
-				contraintes.gridx++;
 				break;
 			case 3:
 				layout.addLayoutComponent(relancer, contraintes);
 				this.add(relancer);
-				contraintes.gridx++;
 				break;
 			case 4:
 				layout.addLayoutComponent(fin, contraintes);
 				this.add(fin);
-				contraintes.gridx++;
 				break;
 			case 5:
 				layout.addLayoutComponent(check, contraintes);
 				this.add(check);
-				contraintes.gridx++;
 				break;
 			case 6:
 				layout.addLayoutComponent(ouvrir, contraintes);
 				this.add(ouvrir);
-				contraintes.gridx++;
 				break;
 			case 8:
 				layout.addLayoutComponent(commencer, contraintes);
 				this.add(commencer);
-				contraintes.gridx++;
+				break;
+			case 9:
+				layout.addLayoutComponent(tapis, contraintes);
+				this.add(tapis);
 				break;
 			}
 		}
+		contraintes.gridwidth = GridBagConstraints.REMAINDER;
 		layout.addLayoutComponent(quitter, contraintes);
 		this.add(quitter);
 
-		contraintes.gridx = 0;
-		contraintes.gridy = 1;
+		contraintes.gridwidth = GridBagConstraints.RELATIVE;
 		layout.addLayoutComponent(etiSuivre, contraintes);
-		contraintes.gridx++;
 		layout.addLayoutComponent(valSuivre, contraintes);
-		contraintes.gridx++;
 		layout.addLayoutComponent(etiRelancer, contraintes);
-		contraintes.gridx++;
+		contraintes.gridwidth = GridBagConstraints.REMAINDER;
 		layout.addLayoutComponent(valRelancer, contraintes);
 
 		this.add(etiSuivre);
 		this.add(valSuivre);
-		this.add(etiSuivre);
+		this.add(etiRelancer);
 		this.add(valRelancer);
 		
 		this.validate();
@@ -176,23 +175,19 @@ public class JBoutons extends JPanel implements ActionListener {
 	 */
 	public void setQuitter () {
 		this.razAffichage();
-		contraintes.gridx = 2;
-		contraintes.gridy = 0;
+		contraintes.gridwidth = GridBagConstraints.REMAINDER;
 		layout.addLayoutComponent(quitter, contraintes);
-		contraintes.gridx = 0;
-		contraintes.gridy = 1;
+		contraintes.gridwidth = GridBagConstraints.RELATIVE;
 		layout.addLayoutComponent(etiSuivre, contraintes);
-		contraintes.gridx++;
 		layout.addLayoutComponent(valSuivre, contraintes);
-		contraintes.gridx++;
 		layout.addLayoutComponent(etiRelancer, contraintes);
-		contraintes.gridx++;
+		contraintes.gridwidth = GridBagConstraints.REMAINDER;
 		layout.addLayoutComponent(valRelancer, contraintes);
 
 		this.add(quitter);
 		this.add(etiSuivre);
 		this.add(valSuivre);
-		this.add(etiSuivre);
+		this.add(etiRelancer);
 		this.add(valRelancer);
 		
 		this.validate();
@@ -212,7 +207,8 @@ public class JBoutons extends JPanel implements ActionListener {
 	 */
 	private void razAffichage () {
 		this.removeAll();
-		this.validate();
+		layout = new GridBagLayout();
+		this.setLayout(layout);
 	}
 
 	/**
@@ -220,28 +216,82 @@ public class JBoutons extends JPanel implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == rejoindre) {
-			
+			try {
+				int i = 0;
+				boolean rejoind = Global.serveur.rejoindre(Global.UID, Global.pseudo, i);
+				while ((!rejoind) && i < 10) {
+					rejoind = Global.serveur.rejoindre(Global.UID, Global.pseudo, i);
+					i++;
+				}
+				
+				if (rejoind) {
+					Global.isGaming = true;
+				}
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == seCoucher) {
-			
+			try {
+				Global.serveur.setAction(Global.UID, 5, Global.UID);
+				this.setQuitter();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == suivre) {
-			
+			try {
+				Global.serveur.setAction(Global.UID, 2, Global.valSuivre);
+				this.setQuitter();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == relancer) {
-			
+			try {
+				Global.serveur.setAction(Global.UID, 3, Global.valRelancer);
+				this.setQuitter();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == fin) {
-			
+			try {
+				Global.serveur.setAction(Global.UID, 7, Global.UID);
+				this.setQuitter();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == check) {
-			
+			try {
+				Global.serveur.setAction(Global.UID, 1, Global.UID);
+				this.setQuitter();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == ouvrir) {
-			
+			try {
+				Global.serveur.setAction(Global.UID, 6, Global.valSuivre);
+				this.setQuitter();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == commencer) {
-			
+			try {
+				Global.serveur.start();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
 		} else if (e.getSource() == quitter) {
 			try {
 				Global.serveur.quitter(Global.UID);
 			} catch (RemoteException e1) {
-				e1.printStackTrace();
+
 			}
 			System.exit(0);
-		} 
+		} else if (e.getSource() == tapis) {
+			try {
+				Global.serveur.setAction(Global.UID, 4, Global.banque);
+				this.setQuitter();
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 }

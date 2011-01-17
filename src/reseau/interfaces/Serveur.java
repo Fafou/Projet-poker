@@ -44,6 +44,7 @@ public interface Serveur extends Remote{
 	 * 				4 -> tapis
 	 * 				5 -> seCoucher
 	 * 				6 -> ouvrir
+	 * 				7 -> fin de l'enchère
 	 * @param montant Valeur de la mise ou du tapis
 	 * @throws RemoteException
 	 **/
@@ -53,7 +54,8 @@ public interface Serveur extends Remote{
 	 * Signal du lancement de la partie
 	 * @throws RemoteException
 	 **/
-	void start () throws RemoteException;
+	boolean start () throws RemoteException;
 }
 //TODO Gérer lors de l'ajout si le joueur est à la fois dealer et petite blende
 //TODO Gérer le changement de serveur quand la personne qui part est le serveur
+//TODO UID non static, le mettre dans JTable car sinon je pensse que ca fous la merde et localhost et deux clients
